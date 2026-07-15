@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#092d38">
+  <meta name="description" content="Corrente — encontros para quem vive o oceano.">
+  <title>Corrente — Encontros que seguem a maré</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <main class="phone">
+    <header class="topbar">
+      <button id="profileButton" class="avatar" aria-label="Abrir perfil">+</button>
+      <button class="brand" data-tab="discover"><span>∿</span> corrente</button>
+      <button class="filter" aria-label="Filtros">☷</button>
+    </header>
+
+    <section class="content">
+      <button id="joinBar" class="joinbar"><span>Complete seu perfil</span><b>Cadastre-se e adicione fotos →</b></button>
+      <section id="discover" class="view active">
+        <div class="statusline"><span><i></i> 23 pessoas na sua maré</span><button>Refinar</button></div>
+        <article id="profileCard" class="card">
+          <img id="cardPhoto" alt="Perfil de surfista">
+          <div class="shade"></div><div class="verified">✓ perfil verificado</div>
+          <div class="info">
+            <div class="name"><h1 id="cardName"></h1><span>●</span></div>
+            <p id="cardPlace" class="place"></p><div id="cardSurf" class="surfline"></div>
+            <p id="cardBio" class="bio"></p><div id="cardTags" class="tags"></div>
+          </div>
+          <div id="notice" class="notice" hidden></div>
+        </article>
+        <div class="actions"><button class="small rewind" data-action="back">↶</button><button class="large pass" data-action="pass">×</button><button class="large like" data-action="like">♥</button><button class="small super" data-action="super">✦</button></div>
+        <p class="rule"><b>Ela inicia a conversa.</b> Depois do match, são 24h para mandar a primeira mensagem.</p>
+      </section>
+
+      <section id="matches" class="view panel"><span class="bigicon">◉</span><h1>Sua maré</h1><p>Quando houver uma conexão mútua, ela aparece aqui. Perfis verificados têm prioridade.</p><div class="matchdemo"><div class="bubble marina"></div><div class="heart">♥</div><div class="bubble luiza"></div></div><button data-tab="discover">Continuar descobrindo</button></section>
+      <section id="messages" class="view panel"><span class="bigicon">≈</span><h1>Conversas</h1><p>Sem papo raso: use o spot favorito de vocês para quebrar o gelo.</p><div class="chat"><b>Equipe Corrente</b><span>Bem-vindo à comunidade. Respeito sempre, aloha em dobro.</span></div></section>
+    </section>
+
+    <nav class="bottomnav"><button class="active" data-tab="discover"><span>⌁</span>Descobrir</button><button data-tab="matches"><span>♥</span>Sua maré<i>2</i></button><button data-tab="messages"><span>▱</span>Mensagens<i>1</i></button></nav>
+  </main>
+
+  <div id="modal" class="modalback" hidden>
+    <section class="signup" role="dialog" aria-modal="true" aria-labelledby="signupTitle">
+      <button id="closeModal" class="close" aria-label="Fechar">×</button><p class="eyebrow">ENTRE PARA A CORRENTE</p><h2 id="signupTitle">Crie seu perfil</h2><p class="intro">Mostre quem você é dentro e fora d’água.</p>
+      <form id="profileForm">
+        <label>Nome<input id="name" required maxlength="50"></label>
+        <div class="twocol"><label>Nascimento<input id="birthDate" required type="date"></label><label>Nível<select id="level"><option>Iniciante</option><option selected>Intermediário</option><option>Avançado</option><option>Profissional</option></select></label></div>
+        <label>Cidade / praia base<input id="city" required placeholder="Ex.: Ubatuba, SP"></label>
+        <label>Sobre você<textarea id="bio" required maxlength="280" placeholder="Seu estilo de vida, onda favorita e o que procura…"></textarea></label>
+        <div class="photolabel"><b>Suas fotos</b><span id="photoCount">0/3</span></div><div id="photoGrid" class="photoGrid"></div>
+        <label class="upload">Escolher até 3 fotos<input id="photos" type="file" accept="image/jpeg,image/png,image/webp" multiple></label><small>As fotos ficam somente neste navegador nesta demonstração.</small>
+        <button class="save">Salvar meu perfil</button>
+      </form>
+    </section>
+  </div>
+  <script src="./app.js"></script>
+</body>
+</html>
