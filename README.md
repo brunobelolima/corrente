@@ -5,9 +5,12 @@ Aplicativo de encontros para surfistas, com descoberta de perfis por cartões, c
 ## Funcionalidades
 
 - Descoberta de perfis e curtidas
-- Grupos por local e data da próxima surftrip
+- Navegação entre fotos tocando nas laterais do cartão
+- Informações de perfil exibidas diretamente no cartão
+- Grupos por local e data do próximo surf
+- Entrada em grupos de surftrip e chat persistente entre participantes
 - Perfil autenticado com Sign in with ChatGPT
-- Cadastro com nome, nascimento, gênero, altura, intenção de relacionamento, consumo de bebida alcoólica, uso de cigarro, posicionamento político, estilo musical favorito, Instagram, Spotify, cidade, nível de surfe, próxima surftrip com chegada e saída, e biografia
+- Cadastro com nome, nascimento, gênero, altura, intenção de relacionamento, consumo de bebida alcoólica, uso de cigarro, posicionamento político, estilo musical favorito, Instagram, Spotify, cidade, nível de surfe, tipo de prancha, próximo surf com chegada e saída, e biografia
 - Upload de 1 a 3 fotos em JPG, PNG ou WebP
 - Armazenamento persistente de perfis no Cloudflare D1
 - Armazenamento das fotos no Cloudflare R2

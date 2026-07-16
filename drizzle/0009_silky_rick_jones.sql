@@ -1,0 +1,1 @@
+ALTER TABLE `profiles` ADD `board_type` text DEFAULT '' NOT NULL;

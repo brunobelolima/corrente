@@ -3,12 +3,13 @@
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 
 type Viewer = { name: string; email: string } | null;
-type Draft = { name: string; birthDate: string; gender: string; height: string; relationshipIntent: string; alcoholUse: string; smokingUse: string; politicalView: string; musicTaste: string; instagramUsername: string; spotifyUrl: string; city: string; level: string; bio: string; surftripDestination: string; surftripArrivalDate: string; surftripDepartureDate: string };
+type Draft = { name: string; birthDate: string; gender: string; height: string; relationshipIntent: string; alcoholUse: string; smokingUse: string; politicalView: string; musicTaste: string; instagramUsername: string; spotifyUrl: string; city: string; level: string; boardType: string; bio: string; surftripDestination: string; surftripArrivalDate: string; surftripDepartureDate: string };
+type GroupMessage = { id: string; authorName: string; message: string; createdAt: number; own?: boolean };
 
 const surfers = [
-  { name: "Marina", age: 29, spot: "Maresias, SP", distance: "8 km", level: "Intermediária", wave: "Direitas longas", bio: "Arquiteta, longboarder e caçadora de pôr do sol. Procuro alguém para dividir estrada, café e maré boa.", trip: "Ericeira · 18 set", photo: "https://images.unsplash.com/photo-1502680390469-be75c86b636f?auto=format&fit=crop&w=1200&q=88", tags: ["Longboard", "Yoga", "Road trips"] },
-  { name: "Luiza", age: 31, spot: "Praia do Rosa, SC", distance: "24 km", level: "Avançada", wave: "Tubos e água fria", bio: "Fotógrafa do oceano. Minha manhã ideal começa antes do vento e termina com brunch.", trip: "El Salvador · 04 out", photo: "https://images.unsplash.com/photo-1530053969600-caed2596d2427?auto=format&fit=crop&w=1200&q=88", tags: ["Shortboard", "Fotografia", "Trilhas"] },
-  { name: "Clara", age: 27, spot: "Itamambuca, SP", distance: "41 km", level: "Intermediária", wave: "Beach breaks", bio: "Bióloga marinha, aprendiz de shaper e otimista incurável.", trip: "Fernando de Noronha · 12 nov", photo: "https://images.unsplash.com/photo-1455729552865-3658a5d39692?auto=format&fit=crop&w=1200&q=88", tags: ["Fish", "Natureza", "Música"] },
+  { name: "Marina", age: 29, spot: "Maresias, SP", distance: "8 km", level: "Intermediária", wave: "Direitas longas", bio: "Arquiteta, longboarder e caçadora de pôr do sol. Procuro alguém para dividir estrada, café e maré boa.", trip: "Ericeira · 18 set", photos: ["https://images.unsplash.com/photo-1502680390469-be75c86b636f?auto=format&fit=crop&w=1200&h=1600&q=88", "https://images.unsplash.com/photo-1502680390469-be75c86b636f?auto=format&fit=crop&w=1200&h=1600&fp-x=.35&q=88", "https://images.unsplash.com/photo-1502680390469-be75c86b636f?auto=format&fit=crop&w=1200&h=1600&fp-x=.65&q=88"], tags: ["1,70 m", "Relacionamento sério", "Longboard", "Reggae", "Bebe socialmente", "Não fuma"] },
+  { name: "Luiza", age: 31, spot: "Praia do Rosa, SC", distance: "24 km", level: "Avançada", wave: "Tubos e água fria", bio: "Fotógrafa do oceano. Minha manhã ideal começa antes do vento e termina com brunch.", trip: "El Salvador · 04 out", photos: ["https://images.unsplash.com/photo-1530053969600-caed2596d2427?auto=format&fit=crop&w=1200&h=1600&q=88", "https://images.unsplash.com/photo-1530053969600-caed2596d2427?auto=format&fit=crop&w=1200&h=1600&fp-x=.35&q=88", "https://images.unsplash.com/photo-1530053969600-caed2596d2427?auto=format&fit=crop&w=1200&h=1600&fp-x=.65&q=88"], tags: ["1,65 m", "Algo casual", "Shortboard", "MPB", "Não bebe", "Não fuma"] },
+  { name: "Clara", age: 27, spot: "Itamambuca, SP", distance: "41 km", level: "Intermediária", wave: "Beach breaks", bio: "Bióloga marinha, aprendiz de shaper e otimista incurável.", trip: "Fernando de Noronha · 12 nov", photos: ["https://images.unsplash.com/photo-1455729552865-3658a5d39692?auto=format&fit=crop&w=1200&h=1600&q=88", "https://images.unsplash.com/photo-1455729552865-3658a5d39692?auto=format&fit=crop&w=1200&h=1600&fp-x=.35&q=88", "https://images.unsplash.com/photo-1455729552865-3658a5d39692?auto=format&fit=crop&w=1200&h=1600&fp-x=.65&q=88"], tags: ["1,68 m", "Amizade e surf", "Fish", "Indie", "Bebe às vezes", "Não fuma"] },
 ];
 
 const tripGroups = [
@@ -19,22 +20,26 @@ const tripGroups = [
 
 export default function CorrenteApp({ user }: { user: Viewer }) {
   const [index, setIndex] = useState(0);
+  const [photoIndex, setPhotoIndex] = useState(0);
   const [tab, setTab] = useState("descobrir");
   const [notice, setNotice] = useState("");
   const [signup, setSignup] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [joinedGroups, setJoinedGroups] = useState<string[]>([]);
+  const [activeGroup, setActiveGroup] = useState<string | null>(null);
+  const [groupMessages, setGroupMessages] = useState<GroupMessage[]>([]);
+  const [chatMessage, setChatMessage] = useState("");
   const [photos, setPhotos] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
-  const [draft, setDraft] = useState<Draft>({ name: user?.name ?? "", birthDate: "", gender: "", height: "", relationshipIntent: "", alcoholUse: "", smokingUse: "", politicalView: "", musicTaste: "", instagramUsername: "", spotifyUrl: "", city: "", level: "Intermediário", bio: "", surftripDestination: "", surftripArrivalDate: "", surftripDepartureDate: "" });
+  const [draft, setDraft] = useState<Draft>({ name: user?.name ?? "", birthDate: "", gender: "", height: "", relationshipIntent: "", alcoholUse: "", smokingUse: "", politicalView: "", musicTaste: "", instagramUsername: "", spotifyUrl: "", city: "", level: "Intermediário", boardType: "", bio: "", surftripDestination: "", surftripArrivalDate: "", surftripDepartureDate: "" });
   const profile = surfers[index % surfers.length];
 
   useEffect(() => () => previews.forEach(URL.revokeObjectURL), [previews]);
 
   function react(kind: "pass" | "like" | "super") {
     setNotice(kind === "pass" ? "Próxima onda…" : kind === "super" ? "Prioridade enviada ✦" : `Você curtiu ${profile.name}!`);
-    setTimeout(() => { setIndex((i) => i + 1); setNotice(""); }, 450);
+    setTimeout(() => { setIndex((i) => i + 1); setPhotoIndex(0); setNotice(""); }, 450);
   }
 
   function pickPhotos(event: ChangeEvent<HTMLInputElement>) {
@@ -56,6 +61,29 @@ export default function CorrenteApp({ user }: { user: Viewer }) {
     else setNotice((await response.json()).error ?? "Não foi possível salvar o perfil.");
   }
 
+  async function openGroupChat(groupId: string) {
+    if (!user) { setNotice("Entre com ChatGPT para participar do grupo."); return; }
+    if (!joinedGroups.includes(groupId)) {
+      const joined = await fetch("/api/trip-chat", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ action: "join", groupId }) });
+      if (!joined.ok) { setNotice((await joined.json()).error ?? "Não foi possível entrar no grupo."); return; }
+      setJoinedGroups(current => [...new Set([...current, groupId])]);
+    }
+    const response = await fetch(`/api/trip-chat?groupId=${encodeURIComponent(groupId)}`);
+    const data = await response.json();
+    if (!response.ok) { setNotice(data.error ?? "Não foi possível abrir o chat."); return; }
+    setActiveGroup(groupId);
+    setGroupMessages(data.messages ?? []);
+  }
+
+  async function sendGroupMessage(event: FormEvent) {
+    event.preventDefault();
+    if (!activeGroup || !chatMessage.trim()) return;
+    const response = await fetch("/api/trip-chat", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ action: "message", groupId: activeGroup, message: chatMessage }) });
+    if (!response.ok) { setNotice((await response.json()).error ?? "Não foi possível enviar."); return; }
+    setChatMessage("");
+    await openGroupChat(activeGroup);
+  }
+
   return (
     <main>
       <header className="topbar">
@@ -69,15 +97,15 @@ export default function CorrenteApp({ user }: { user: Viewer }) {
         {tab === "descobrir" && <>
           <div className="statusline"><span><i /> 23 pessoas na sua maré</span><button>Refinar</button></div>
           <div className={`card ${notice ? "leaving" : ""}`}>
-            <img src={profile.photo} alt={`${profile.name} surfando`} /><div className="shade" /><div className="verified">✓ perfil verificado</div>
-            <div className="info"><div className="name"><h1>{profile.name}, {profile.age}</h1><span>●</span></div><p className="place">⌖ {profile.spot} · {profile.distance}</p><div className="surfline"><b>{profile.level}</b><span>•</span>{profile.wave}</div><div className="trip">✈ Próxima surftrip: <b>{profile.trip}</b></div><p className="bio">{profile.bio}</p><div className="tags">{profile.tags.map(tag => <span key={tag}>{tag}</span>)}</div></div>
+            <img src={profile.photos[photoIndex]} alt={`${profile.name}, foto ${photoIndex + 1} de ${profile.photos.length}`} /><div className="shade" /><div className="photoProgress">{profile.photos.map((_, i) => <span className={i === photoIndex ? "active" : ""} key={i}/>)}</div><button className="photoNav photoPrev" aria-label="Ver foto anterior" onClick={() => setPhotoIndex(i => (i - 1 + profile.photos.length) % profile.photos.length)}/><button className="photoNav photoNext" aria-label="Ver próxima foto" onClick={() => setPhotoIndex(i => (i + 1) % profile.photos.length)}/><div className="verified">✓ perfil verificado</div>
+            <div className="info"><div className="name"><h1>{profile.name}, {profile.age}</h1><span>●</span></div><p className="place">⌖ {profile.spot} · {profile.distance}</p><div className="surfline"><b>{profile.level}</b><span>•</span>{profile.wave}</div><div className="trip">✈ Próximo surf: <b>{profile.trip}</b></div><p className="bio">{profile.bio}</p><div className="tags">{profile.tags.map(tag => <span key={tag}>{tag}</span>)}</div></div>
             {notice && <div className="notice">{notice}</div>}
           </div>
-          <div className="actions"><button className="small rewind" aria-label="Voltar" onClick={() => setIndex(i => Math.max(0, i - 1))}>↶</button><button className="large pass" aria-label="Passar" onClick={() => react("pass")}>×</button><button className="large like" aria-label="Curtir" onClick={() => react("like")}>♥</button><button className="small super" aria-label="Enviar prioridade" onClick={() => react("super")}>✦</button></div>
+          <div className="actions"><button className="small rewind" aria-label="Voltar" onClick={() => { setIndex(i => Math.max(0, i - 1)); setPhotoIndex(0); }}>↶</button><button className="large pass" aria-label="Passar" onClick={() => react("pass")}>×</button><button className="large like" aria-label="Curtir" onClick={() => react("like")}>♥</button><button className="small super" aria-label="Enviar prioridade" onClick={() => react("super")}>✦</button></div>
           <p className="rule"><b>Ela inicia a conversa.</b> Depois do match, são 24h para mandar a primeira mensagem.</p>
         </>}
         {tab === "maré" && <section className="panel"><span className="bigicon">◉</span><h1>Sua maré</h1><p>Quando houver uma conexão mútua, ela aparece aqui. Perfis verificados têm prioridade.</p><div className="matchdemo"><div className="bubble marina"/><div className="heart">♥</div><div className="bubble luiza"/></div><button onClick={() => setTab("descobrir")}>Continuar descobrindo</button></section>}
-        {tab === "surftrips" && <section className="groupsPanel"><p className="eyebrow">VIAJE COM A SUA TRIBO</p><h1>Grupos de surftrip</h1><p>Entre no grupo do seu próximo destino e conheça quem estará no mesmo pico.</p><div className="groupList">{tripGroups.map(group => { const joined = joinedGroups.includes(group.place); return <article className="groupCard" key={group.place}><div className="groupIcon">⌖</div><div><h2>{group.place}</h2><p>{group.date} · {group.members + (joined ? 1 : 0)} surfistas</p><small>{group.wave}</small></div><button className={joined ? "joined" : ""} onClick={() => setJoinedGroups(current => joined ? current.filter(place => place !== group.place) : [...current, group.place])}>{joined ? "No grupo ✓" : "Entrar"}</button></article>})}</div><p className="groupHint">O local preenchido no seu perfil ajuda a sugerir o grupo certo.</p></section>}
+        {tab === "surftrips" && <section className="groupsPanel"><p className="eyebrow">VIAJE COM A SUA TRIBO</p><h1>Grupos de surftrip</h1><p>Entre no grupo do seu próximo destino e converse com quem estará no mesmo pico.</p><div className="groupList">{tripGroups.map(group => { const joined = joinedGroups.includes(group.place); return <article className="groupCard" key={group.place}><div className="groupIcon">⌖</div><div><h2>{group.place}</h2><p>{group.date} · {group.members + (joined ? 1 : 0)} surfistas</p><small>{group.wave}</small></div><button className={joined ? "joined" : ""} onClick={() => openGroupChat(group.place)}>{joined ? "Abrir chat" : "Entrar"}</button></article>})}</div>{activeGroup && <section className="groupChat"><header><div><small>CHAT DA SURFTRIP</small><h2>{activeGroup}</h2></div><button onClick={() => setActiveGroup(null)} aria-label="Fechar chat">×</button></header><div className="groupMessages">{groupMessages.length ? groupMessages.map(item => <div className={item.own ? "groupMessage own" : "groupMessage"} key={item.id}><b>{item.authorName}</b><span>{item.message}</span></div>) : <p>Seja a primeira pessoa a mandar mensagem neste grupo.</p>}</div><form className="groupComposer" onSubmit={sendGroupMessage}><input maxLength={500} value={chatMessage} onChange={event => setChatMessage(event.target.value)} placeholder="Escreva para o grupo…" aria-label="Mensagem para o grupo"/><button>Enviar</button></form></section>}<p className="groupHint">O local preenchido no seu perfil ajuda a sugerir o grupo certo.</p></section>}
         {tab === "mensagens" && <section className="panel"><span className="bigicon">≈</span><h1>Conversas</h1><p>Sem papo raso: use o spot favorito de vocês para quebrar o gelo.</p><div className="chat"><b>Equipe Corrente</b><span>Bem-vindo à comunidade. Respeito sempre, aloha em dobro.</span></div></section>}
       </section>
 
@@ -91,6 +119,7 @@ export default function CorrenteApp({ user }: { user: Viewer }) {
           {user && <form onSubmit={submit}>
             <label>Nome<input required value={draft.name} onChange={e => setDraft({...draft,name:e.target.value})}/></label>
             <div className="twocol"><label>Nascimento<input required type="date" value={draft.birthDate} onChange={e => setDraft({...draft,birthDate:e.target.value})}/></label><label>Nível<select value={draft.level} onChange={e => setDraft({...draft,level:e.target.value})}><option>Iniciante</option><option>Intermediário</option><option>Avançado</option><option>Profissional</option></select></label></div>
+            <label>Tipo de prancha<select required value={draft.boardType} onChange={e => setDraft({...draft,boardType:e.target.value})}><option value="">Selecione</option><option>Shortboard</option><option>Longboard</option><option>Funboard</option><option>Fish</option><option>Mid-length</option><option>Bodyboard</option><option>SUP</option><option>Pranchão</option><option>Outro</option></select></label>
             <div className="twocol"><label>Gênero<select required value={draft.gender} onChange={e => setDraft({...draft,gender:e.target.value})}><option value="">Selecione</option><option>Mulher</option><option>Homem</option><option>Não binário</option><option>Prefiro não informar</option></select></label><label>Altura (cm)<input type="number" min="120" max="230" required value={draft.height} onChange={e => setDraft({...draft,height:e.target.value})} placeholder="Ex.: 175" /></label></div>
             <label>Intenção de relacionamento<select required value={draft.relationshipIntent} onChange={e => setDraft({...draft,relationshipIntent:e.target.value})}><option value="">Selecione</option><option>Relacionamento sério</option><option>Algo casual</option><option>Amizade e surf</option><option>Ainda estou descobrindo</option></select></label>
             <div className="twocol"><label>Bebida alcoólica<select required value={draft.alcoholUse} onChange={e => setDraft({...draft,alcoholUse:e.target.value})}><option value="">Selecione</option><option>Não bebo</option><option>Socialmente</option><option>Às vezes</option><option>Frequentemente</option></select></label><label>Cigarro<select required value={draft.smokingUse} onChange={e => setDraft({...draft,smokingUse:e.target.value})}><option value="">Selecione</option><option>Não fumo</option><option>Socialmente</option><option>Às vezes</option><option>Frequentemente</option><option>Estou parando</option></select></label></div>
@@ -98,7 +127,7 @@ export default function CorrenteApp({ user }: { user: Viewer }) {
             <label>Estilo musical favorito<select required value={draft.musicTaste} onChange={e => setDraft({...draft,musicTaste:e.target.value})}><option value="">Selecione</option><option>Reggae</option><option>Rock</option><option>Pop</option><option>MPB</option><option>Rap / Hip-hop</option><option>Eletrônica</option><option>Sertanejo</option><option>Samba / Pagode</option><option>Indie</option><option>Jazz / Blues</option><option>Outro</option></select></label>
             <fieldset className="tripFields"><legend>Redes e música</legend><div className="twocol"><label>Instagram<input value={draft.instagramUsername} onChange={e => setDraft({...draft,instagramUsername:e.target.value})} placeholder="@seuusuario" autoCapitalize="none" /></label><label>Perfil do Spotify<input type="url" value={draft.spotifyUrl} onChange={e => setDraft({...draft,spotifyUrl:e.target.value})} placeholder="https://open.spotify.com/user/..." /></label></div><small>Opcional. Compartilhe somente seus perfis públicos.</small></fieldset>
             <label>Cidade / praia base<input required placeholder="Ex.: Ubatuba, SP" value={draft.city} onChange={e => setDraft({...draft,city:e.target.value})}/></label>
-            <fieldset className="tripFields"><legend>Próxima surftrip</legend><label>Local<input required placeholder="Ex.: Ericeira, Portugal" value={draft.surftripDestination} onChange={e => setDraft({...draft,surftripDestination:e.target.value})}/></label><div className="twocol"><label>Data de chegada<input required type="date" value={draft.surftripArrivalDate} onChange={e => setDraft({...draft,surftripArrivalDate:e.target.value})}/></label><label>Data de saída<input required type="date" min={draft.surftripArrivalDate || undefined} value={draft.surftripDepartureDate} onChange={e => setDraft({...draft,surftripDepartureDate:e.target.value})}/></label></div></fieldset>
+            <fieldset className="tripFields"><legend>Próximo surf</legend><label>Local<input required placeholder="Ex.: Ericeira, Portugal" value={draft.surftripDestination} onChange={e => setDraft({...draft,surftripDestination:e.target.value})}/></label><div className="twocol"><label>Data de chegada<input required type="date" value={draft.surftripArrivalDate} onChange={e => setDraft({...draft,surftripArrivalDate:e.target.value})}/></label><label>Data de saída<input required type="date" min={draft.surftripArrivalDate || undefined} value={draft.surftripDepartureDate} onChange={e => setDraft({...draft,surftripDepartureDate:e.target.value})}/></label></div></fieldset>
             <label>Sobre você<textarea required maxLength={280} placeholder="Seu estilo de vida, onda favorita e o que procura…" value={draft.bio} onChange={e => setDraft({...draft,bio:e.target.value})}/></label>
             <div className="photolabel"><b>Suas fotos</b><span>{photos.length}/3</span></div><div className="photoGrid">{[0,1,2].map(i => <div className="photoSlot" key={i}>{previews[i] ? <img src={previews[i]} alt={`Foto ${i+1} selecionada`}/> : <span>{i === 0 ? "+" : "○"}</span>}</div>)}</div>
             <label className="upload">Escolher até 3 fotos<input type="file" accept="image/jpeg,image/png,image/webp" multiple onChange={pickPhotos}/></label><small>JPG, PNG ou WebP. Máximo de 5 MB por foto.</small><button className="save" disabled={saving || photos.length === 0}>{saving ? "Salvando…" : saved ? "Perfil criado ✓" : "Criar meu perfil"}</button>
