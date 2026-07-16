@@ -7,6 +7,7 @@
   <meta name="description" content="Corrente — encontros para quem vive o oceano.">
   <title>Corrente — Encontros que seguem a maré</title>
   <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="./trip.css">
 </head>
 <body>
   <main class="phone">
@@ -25,7 +26,7 @@
           <div class="shade"></div><div class="verified">✓ perfil verificado</div>
           <div class="info">
             <div class="name"><h1 id="cardName"></h1><span>●</span></div>
-            <p id="cardPlace" class="place"></p><div id="cardSurf" class="surfline"></div>
+            <p id="cardPlace" class="place"></p><div id="cardSurf" class="surfline"></div><div id="cardTrip" class="trip"></div>
             <p id="cardBio" class="bio"></p><div id="cardTags" class="tags"></div>
           </div>
           <div id="notice" class="notice" hidden></div>
@@ -35,10 +36,11 @@
       </section>
 
       <section id="matches" class="view panel"><span class="bigicon">◉</span><h1>Sua maré</h1><p>Quando houver uma conexão mútua, ela aparece aqui. Perfis verificados têm prioridade.</p><div class="matchdemo"><div class="bubble marina"></div><div class="heart">♥</div><div class="bubble luiza"></div></div><button data-tab="discover">Continuar descobrindo</button></section>
+      <section id="surftrips" class="view groupsPanel"><p class="eyebrow">VIAJE COM A SUA TRIBO</p><h1>Grupos de surftrip</h1><p>Entre no grupo do seu próximo destino e conheça quem estará no mesmo pico.</p><div id="groupList" class="groupList"></div><p class="groupHint">O local preenchido no seu perfil ajuda a sugerir o grupo certo.</p></section>
       <section id="messages" class="view panel"><span class="bigicon">≈</span><h1>Conversas</h1><p>Sem papo raso: use o spot favorito de vocês para quebrar o gelo.</p><div class="chat"><b>Equipe Corrente</b><span>Bem-vindo à comunidade. Respeito sempre, aloha em dobro.</span></div></section>
     </section>
 
-    <nav class="bottomnav"><button class="active" data-tab="discover"><span>⌁</span>Descobrir</button><button data-tab="matches"><span>♥</span>Sua maré<i>2</i></button><button data-tab="messages"><span>▱</span>Mensagens<i>1</i></button></nav>
+    <nav class="bottomnav"><button class="active" data-tab="discover"><span>⌁</span>Descobrir</button><button data-tab="matches"><span>♥</span>Sua maré<i>2</i></button><button data-tab="surftrips"><span>✈</span>Surftrips</button><button data-tab="messages"><span>▱</span>Mensagens<i>1</i></button></nav>
   </main>
 
   <div id="modal" class="modalback" hidden>
@@ -48,6 +50,7 @@
         <label>Nome<input id="name" required maxlength="50"></label>
         <div class="twocol"><label>Nascimento<input id="birthDate" required type="date"></label><label>Nível<select id="level"><option>Iniciante</option><option selected>Intermediário</option><option>Avançado</option><option>Profissional</option></select></label></div>
         <label>Cidade / praia base<input id="city" required placeholder="Ex.: Ubatuba, SP"></label>
+        <fieldset class="tripFields"><legend>Próxima surftrip</legend><div class="twocol"><label>Local<input id="surftripDestination" required placeholder="Ex.: Ericeira, Portugal"></label><label>Data<input id="surftripDate" required type="date"></label></div></fieldset>
         <label>Sobre você<textarea id="bio" required maxlength="280" placeholder="Seu estilo de vida, onda favorita e o que procura…"></textarea></label>
         <div class="photolabel"><b>Suas fotos</b><span id="photoCount">0/3</span></div><div id="photoGrid" class="photoGrid"></div>
         <label class="upload">Escolher até 3 fotos<input id="photos" type="file" accept="image/jpeg,image/png,image/webp" multiple></label><small>As fotos ficam somente neste navegador nesta demonstração.</small>
@@ -56,5 +59,6 @@
     </section>
   </div>
   <script src="./app.js"></script>
+  <script src="./trip.js"></script>
 </body>
 </html>

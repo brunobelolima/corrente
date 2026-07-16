@@ -7,6 +7,8 @@ export const profiles = sqliteTable("profiles", {
   city: text("city").notNull(),
   level: text("level").notNull(),
   bio: text("bio").notNull(),
+  surftripDestination: text("surftrip_destination").notNull().default(""),
+  surftripDate: text("surftrip_date").notNull().default(""),
   createdAt: integer("created_at").notNull(),
   updatedAt: integer("updated_at").notNull(),
 });
