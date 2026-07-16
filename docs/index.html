@@ -11,19 +11,20 @@
   <link rel="stylesheet" href="./chat.css">
   <link rel="stylesheet" href="./photo-carousel.css">
   <link rel="stylesheet" href="./profile-details.css">
+  <link rel="stylesheet" href="./radius-filter.css">
 </head>
 <body>
   <main class="phone">
     <header class="topbar">
       <button id="profileButton" class="avatar" aria-label="Abrir perfil">+</button>
       <button class="brand" data-tab="discover"><span>∿</span> corrente</button>
-      <button class="filter" aria-label="Filtros">☷</button>
+      <button id="filterButton" class="filter" aria-label="Filtros">☷</button>
     </header>
 
     <section class="content">
       <button id="joinBar" class="joinbar"><span>Complete seu perfil</span><b>Cadastre-se e adicione fotos →</b></button>
       <section id="discover" class="view active">
-        <div class="statusline"><span><i></i> 23 pessoas na sua maré</span><button>Refinar</button></div>
+        <div class="statusline"><span id="radiusStatus"><i></i></span><button id="refineButton">Refinar</button></div>
         <article id="profileCard" class="card">
           <img id="cardPhoto" alt="Perfil de surfista">
           <div id="photoProgress" class="photoProgress"></div><button id="photoPrev" class="photoNav photoPrev" aria-label="Ver foto anterior"></button><button id="photoNext" class="photoNav photoNext" aria-label="Ver próxima foto"></button>
@@ -40,11 +41,11 @@
       </section>
 
       <section id="matches" class="view panel"><span class="bigicon">◉</span><h1>Sua maré</h1><p>Quando houver uma conexão mútua, ela aparece aqui. Perfis verificados têm prioridade.</p><div class="matchdemo"><div class="bubble marina"></div><div class="heart">♥</div><div class="bubble luiza"></div></div><button data-tab="discover">Continuar descobrindo</button></section>
-      <section id="surftrips" class="view groupsPanel"><p class="eyebrow">VIAJE COM A SUA TRIBO</p><h1>Grupos de surftrip</h1><p>Entre no grupo do seu próximo destino e converse com quem estará no mesmo pico.</p><div id="groupList" class="groupList"></div><section id="groupChat" class="groupChat" hidden><header><div><small>CHAT DA SURFTRIP</small><h2 id="groupChatTitle"></h2></div><button id="closeGroupChat" aria-label="Fechar chat">×</button></header><div id="groupMessages" class="groupMessages"></div><form id="groupComposer" class="groupComposer"><input id="groupMessageInput" maxlength="500" required placeholder="Escreva para o grupo…" aria-label="Mensagem para o grupo"><button>Enviar</button></form></section><p class="groupHint">O local preenchido no seu perfil ajuda a sugerir o grupo certo.</p></section>
+      <section id="surftrips" class="view groupsPanel"><p class="eyebrow">SURFE COM A SUA TRIBO</p><h1>Grupos de surf</h1><p>O próximo surf do seu perfil cria um grupo sincronizado para conversar com quem estará no mesmo pico.</p><div id="groupList" class="groupList"></div><section id="groupChat" class="groupChat" hidden><header><div><small>CHAT DO GRUPO DE SURF</small><h2 id="groupChatTitle"></h2></div><button id="closeGroupChat" aria-label="Fechar chat">×</button></header><div id="groupMessages" class="groupMessages"></div><form id="groupComposer" class="groupComposer"><input id="groupMessageInput" maxlength="500" required placeholder="Escreva para o grupo…" aria-label="Mensagem para o grupo"><button>Enviar</button></form></section><p class="groupHint">Altere o próximo surf no cadastro para sincronizar este grupo.</p></section>
       <section id="messages" class="view panel"><span class="bigicon">≈</span><h1>Conversas</h1><p>Sem papo raso: use o spot favorito de vocês para quebrar o gelo.</p><div class="chat"><b>Equipe Corrente</b><span>Bem-vindo à comunidade. Respeito sempre, aloha em dobro.</span></div></section>
     </section>
 
-    <nav class="bottomnav"><button class="active" data-tab="discover"><span>⌁</span>Descobrir</button><button data-tab="matches"><span>♥</span>Sua maré<i>2</i></button><button data-tab="surftrips"><span>✈</span>Surftrips</button><button data-tab="messages"><span>▱</span>Mensagens<i>1</i></button></nav>
+    <nav class="bottomnav"><button class="active" data-tab="discover"><span>⌁</span>Descobrir</button><button data-tab="matches"><span>♥</span>Sua maré<i>2</i></button><button data-tab="surftrips"><span>✈</span>Grupos</button><button data-tab="messages"><span>▱</span>Mensagens<i>1</i></button></nav>
   </main>
 
   <div id="modal" class="modalback" hidden>
@@ -69,6 +70,7 @@
       </form>
     </section>
   </div>
+  <div id="radiusModal" class="modalback" hidden><section class="signup radiusDialog" role="dialog" aria-modal="true" aria-labelledby="radiusTitle"><button id="closeRadius" class="close" aria-label="Fechar">×</button><p class="eyebrow">DISTÂNCIA DOS MATCHES</p><h2 id="radiusTitle">Raio de <span id="radiusValue">50</span> km</h2><p class="intro">Mostraremos surfistas dentro desta distância.</p><label>Raio máximo<input id="radiusInput" type="range" min="10" max="200" step="10" value="50"></label><div class="radiusScale"><span>10 km</span><span>200 km</span></div><button id="applyRadius" class="save">Aplicar filtro</button></section></div>
   <script src="./app.js"></script>
   <script src="./trip.js"></script>
 </body>

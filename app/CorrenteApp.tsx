@@ -12,7 +12,7 @@ const surfers = [
   { name: "Clara", age: 27, spot: "Itamambuca, SP", distance: "41 km", level: "Intermediária", wave: "Beach breaks", bio: "Bióloga marinha, aprendiz de shaper e otimista incurável.", trip: "Fernando de Noronha · 12 nov", photos: ["https://images.unsplash.com/photo-1455729552865-3658a5d39692?auto=format&fit=crop&w=1200&h=1600&q=88", "https://images.unsplash.com/photo-1455729552865-3658a5d39692?auto=format&fit=crop&w=1200&h=1600&fp-x=.35&q=88", "https://images.unsplash.com/photo-1455729552865-3658a5d39692?auto=format&fit=crop&w=1200&h=1600&fp-x=.65&q=88"], tags: ["1,68 m", "Amizade e surf", "Fish", "Indie", "Bebe às vezes", "Não fuma"] },
 ];
 
-const tripGroups = [
+const suggestedSurfGroups = [
   { place: "Ericeira, Portugal", date: "18–25 set", members: 12, wave: "Point breaks · intermediário+" },
   { place: "El Salvador", date: "04–12 out", members: 8, wave: "Direitas longas · avançado" },
   { place: "Fernando de Noronha", date: "12–19 nov", members: 15, wave: "Ondulação de norte · todos os níveis" },
@@ -21,6 +21,8 @@ const tripGroups = [
 export default function CorrenteApp({ user }: { user: Viewer }) {
   const [index, setIndex] = useState(0);
   const [photoIndex, setPhotoIndex] = useState(0);
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [matchRadius, setMatchRadius] = useState(50);
   const [tab, setTab] = useState("descobrir");
   const [notice, setNotice] = useState("");
   const [signup, setSignup] = useState(false);
@@ -33,9 +35,14 @@ export default function CorrenteApp({ user }: { user: Viewer }) {
   const [photos, setPhotos] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
   const [draft, setDraft] = useState<Draft>({ name: user?.name ?? "", birthDate: "", gender: "", height: "", relationshipIntent: "", alcoholUse: "", smokingUse: "", politicalView: "", musicTaste: "", instagramUsername: "", spotifyUrl: "", city: "", level: "Intermediário", boardType: "", bio: "", surftripDestination: "", surftripArrivalDate: "", surftripDepartureDate: "" });
-  const profile = surfers[index % surfers.length];
+  const eligibleSurfers = surfers.filter(surfer => Number.parseInt(surfer.distance) <= matchRadius);
+  const profile = eligibleSurfers[index % eligibleSurfers.length];
+  const formatSurfDate = (value: string) => value ? new Date(`${value}T12:00:00`).toLocaleDateString("pt-BR", { day: "2-digit", month: "short" }) : "";
+  const syncedSurfGroup = draft.surftripDestination && draft.surftripArrivalDate && draft.surftripDepartureDate ? { place: draft.surftripDestination, date: `${formatSurfDate(draft.surftripArrivalDate)}–${formatSurfDate(draft.surftripDepartureDate)}`, members: 0, wave: "Seu próximo surf · grupo sincronizado" } : null;
+  const surfGroups = syncedSurfGroup ? [syncedSurfGroup, ...suggestedSurfGroups.filter(group => group.place !== syncedSurfGroup.place)] : suggestedSurfGroups;
 
   useEffect(() => () => previews.forEach(URL.revokeObjectURL), [previews]);
+  useEffect(() => { const savedRadius = Number(localStorage.getItem("corrente-match-radius")); if (savedRadius >= 10 && savedRadius <= 200) setMatchRadius(savedRadius); }, []);
 
   function react(kind: "pass" | "like" | "super") {
     setNotice(kind === "pass" ? "Próxima onda…" : kind === "super" ? "Prioridade enviada ✦" : `Você curtiu ${profile.name}!`);
@@ -89,13 +96,13 @@ export default function CorrenteApp({ user }: { user: Viewer }) {
       <header className="topbar">
         <button className="avatar" aria-label="Abrir perfil" onClick={() => setSignup(true)}>{draft.name ? draft.name.slice(0,2).toUpperCase() : "+"}</button>
         <button className="brand" onClick={() => setTab("descobrir")}><span>∿</span> corrente</button>
-        <button className="filter" aria-label="Abrir filtros">☷</button>
+        <button className="filter" aria-label="Abrir filtros" onClick={() => setFiltersOpen(true)}>☷</button>
       </header>
 
       <section className="content">
         {!saved && <button className="joinbar" onClick={() => setSignup(true)}><span>Complete seu perfil</span><b>Cadastre-se e adicione fotos →</b></button>}
         {tab === "descobrir" && <>
-          <div className="statusline"><span><i /> 23 pessoas na sua maré</span><button>Refinar</button></div>
+          <div className="statusline"><span><i /> {eligibleSurfers.length} pessoas em até {matchRadius} km</span><button onClick={() => setFiltersOpen(true)}>Refinar</button></div>
           <div className={`card ${notice ? "leaving" : ""}`}>
             <img src={profile.photos[photoIndex]} alt={`${profile.name}, foto ${photoIndex + 1} de ${profile.photos.length}`} /><div className="shade" /><div className="photoProgress">{profile.photos.map((_, i) => <span className={i === photoIndex ? "active" : ""} key={i}/>)}</div><button className="photoNav photoPrev" aria-label="Ver foto anterior" onClick={() => setPhotoIndex(i => (i - 1 + profile.photos.length) % profile.photos.length)}/><button className="photoNav photoNext" aria-label="Ver próxima foto" onClick={() => setPhotoIndex(i => (i + 1) % profile.photos.length)}/><div className="verified">✓ perfil verificado</div>
             <div className="info"><div className="name"><h1>{profile.name}, {profile.age}</h1><span>●</span></div><p className="place">⌖ {profile.spot} · {profile.distance}</p><div className="surfline"><b>{profile.level}</b><span>•</span>{profile.wave}</div><div className="trip">✈ Próximo surf: <b>{profile.trip}</b></div><p className="bio">{profile.bio}</p><div className="tags">{profile.tags.map(tag => <span key={tag}>{tag}</span>)}</div></div>
@@ -105,11 +112,11 @@ export default function CorrenteApp({ user }: { user: Viewer }) {
           <p className="rule"><b>Ela inicia a conversa.</b> Depois do match, são 24h para mandar a primeira mensagem.</p>
         </>}
         {tab === "maré" && <section className="panel"><span className="bigicon">◉</span><h1>Sua maré</h1><p>Quando houver uma conexão mútua, ela aparece aqui. Perfis verificados têm prioridade.</p><div className="matchdemo"><div className="bubble marina"/><div className="heart">♥</div><div className="bubble luiza"/></div><button onClick={() => setTab("descobrir")}>Continuar descobrindo</button></section>}
-        {tab === "surftrips" && <section className="groupsPanel"><p className="eyebrow">VIAJE COM A SUA TRIBO</p><h1>Grupos de surftrip</h1><p>Entre no grupo do seu próximo destino e converse com quem estará no mesmo pico.</p><div className="groupList">{tripGroups.map(group => { const joined = joinedGroups.includes(group.place); return <article className="groupCard" key={group.place}><div className="groupIcon">⌖</div><div><h2>{group.place}</h2><p>{group.date} · {group.members + (joined ? 1 : 0)} surfistas</p><small>{group.wave}</small></div><button className={joined ? "joined" : ""} onClick={() => openGroupChat(group.place)}>{joined ? "Abrir chat" : "Entrar"}</button></article>})}</div>{activeGroup && <section className="groupChat"><header><div><small>CHAT DA SURFTRIP</small><h2>{activeGroup}</h2></div><button onClick={() => setActiveGroup(null)} aria-label="Fechar chat">×</button></header><div className="groupMessages">{groupMessages.length ? groupMessages.map(item => <div className={item.own ? "groupMessage own" : "groupMessage"} key={item.id}><b>{item.authorName}</b><span>{item.message}</span></div>) : <p>Seja a primeira pessoa a mandar mensagem neste grupo.</p>}</div><form className="groupComposer" onSubmit={sendGroupMessage}><input maxLength={500} value={chatMessage} onChange={event => setChatMessage(event.target.value)} placeholder="Escreva para o grupo…" aria-label="Mensagem para o grupo"/><button>Enviar</button></form></section>}<p className="groupHint">O local preenchido no seu perfil ajuda a sugerir o grupo certo.</p></section>}
+        {tab === "surftrips" && <section className="groupsPanel"><p className="eyebrow">SURFE COM A SUA TRIBO</p><h1>Grupos de surf</h1><p>O próximo surf do seu perfil cria um grupo sincronizado para você conversar com quem estará no mesmo pico.</p><div className="groupList">{surfGroups.map(group => { const joined = joinedGroups.includes(group.place); return <article className="groupCard" key={`${group.place}-${group.date}`}><div className="groupIcon">⌖</div><div><h2>{group.place}</h2><p>{group.date} · {group.members + (joined ? 1 : 0)} surfistas</p><small>{group.wave}</small></div><button className={joined ? "joined" : ""} onClick={() => openGroupChat(group.place)}>{joined ? "Abrir chat" : "Entrar"}</button></article>})}</div>{activeGroup && <section className="groupChat"><header><div><small>CHAT DO GRUPO DE SURF</small><h2>{activeGroup}</h2></div><button onClick={() => setActiveGroup(null)} aria-label="Fechar chat">×</button></header><div className="groupMessages">{groupMessages.length ? groupMessages.map(item => <div className={item.own ? "groupMessage own" : "groupMessage"} key={item.id}><b>{item.authorName}</b><span>{item.message}</span></div>) : <p>Seja a primeira pessoa a mandar mensagem neste grupo.</p>}</div><form className="groupComposer" onSubmit={sendGroupMessage}><input maxLength={500} value={chatMessage} onChange={event => setChatMessage(event.target.value)} placeholder="Escreva para o grupo…" aria-label="Mensagem para o grupo"/><button>Enviar</button></form></section>}<p className="groupHint">Altere o próximo surf no cadastro para sincronizar este grupo.</p></section>}
         {tab === "mensagens" && <section className="panel"><span className="bigicon">≈</span><h1>Conversas</h1><p>Sem papo raso: use o spot favorito de vocês para quebrar o gelo.</p><div className="chat"><b>Equipe Corrente</b><span>Bem-vindo à comunidade. Respeito sempre, aloha em dobro.</span></div></section>}
       </section>
 
-      <nav className="bottomnav" aria-label="Navegação principal"><button className={tab === "descobrir" ? "active" : ""} onClick={() => setTab("descobrir")}><span>⌁</span>Descobrir</button><button className={tab === "maré" ? "active" : ""} onClick={() => setTab("maré")}><span>♥</span>Sua maré<i>2</i></button><button className={tab === "surftrips" ? "active" : ""} onClick={() => setTab("surftrips")}><span>✈</span>Surftrips</button><button className={tab === "mensagens" ? "active" : ""} onClick={() => setTab("mensagens")}><span>▱</span>Mensagens<i>1</i></button></nav>
+      <nav className="bottomnav" aria-label="Navegação principal"><button className={tab === "descobrir" ? "active" : ""} onClick={() => setTab("descobrir")}><span>⌁</span>Descobrir</button><button className={tab === "maré" ? "active" : ""} onClick={() => setTab("maré")}><span>♥</span>Sua maré<i>2</i></button><button className={tab === "surftrips" ? "active" : ""} onClick={() => setTab("surftrips")}><span>✈</span>Grupos</button><button className={tab === "mensagens" ? "active" : ""} onClick={() => setTab("mensagens")}><span>▱</span>Mensagens<i>1</i></button></nav>
 
       {signup && <div className="modalback" role="presentation">
         <section className="signup" role="dialog" aria-modal="true" aria-labelledby="signup-title">
@@ -134,6 +141,7 @@ export default function CorrenteApp({ user }: { user: Viewer }) {
           </form>}
         </section>
       </div>}
+      {filtersOpen && <div className="modalback" role="presentation"><section className="signup radiusDialog" role="dialog" aria-modal="true" aria-labelledby="radius-title"><button className="close" onClick={() => setFiltersOpen(false)} aria-label="Fechar">×</button><p className="eyebrow">DISTÂNCIA DOS MATCHES</p><h2 id="radius-title">Raio de {matchRadius} km</h2><p className="intro">Mostraremos surfistas dentro desta distância.</p><label>Raio máximo<input type="range" min="10" max="200" step="10" value={matchRadius} onChange={event => { const radius = Number(event.target.value); setMatchRadius(radius); setIndex(0); setPhotoIndex(0); localStorage.setItem("corrente-match-radius", String(radius)); }}/></label><div className="radiusScale"><span>10 km</span><span>200 km</span></div><button className="save" onClick={() => setFiltersOpen(false)}>Aplicar filtro</button></section></div>}
     </main>
   );
 }

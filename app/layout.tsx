@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import "./photo-carousel.css";
+import "./radius-filter.css";
 
 export const metadata: Metadata = {
   title: "Corrente — Encontros que seguem a maré",

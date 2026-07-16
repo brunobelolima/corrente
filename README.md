@@ -7,8 +7,9 @@ Aplicativo de encontros para surfistas, com descoberta de perfis por cartões, c
 - Descoberta de perfis e curtidas
 - Navegação entre fotos tocando nas laterais do cartão
 - Informações de perfil exibidas diretamente no cartão
+- Filtro configurável de raio de matches entre 10 e 200 km
 - Grupos por local e data do próximo surf
-- Entrada em grupos de surftrip e chat persistente entre participantes
+- Grupo de surf sincronizado com o próximo surf do usuário e chat persistente entre participantes
 - Perfil autenticado com Sign in with ChatGPT
 - Cadastro com nome, nascimento, gênero, altura, intenção de relacionamento, consumo de bebida alcoólica, uso de cigarro, posicionamento político, estilo musical favorito, Instagram, Spotify, cidade, nível de surfe, tipo de prancha, próximo surf com chegada e saída, e biografia
 - Upload de 1 a 3 fotos em JPG, PNG ou WebP
