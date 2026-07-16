@@ -7,7 +7,7 @@ Aplicativo de encontros para surfistas, com descoberta de perfis por cartões, c
 - Descoberta de perfis e curtidas
 - Grupos por local e data da próxima surftrip
 - Perfil autenticado com Sign in with ChatGPT
-- Cadastro com nome, nascimento, cidade, nível de surfe, próxima surftrip e biografia
+- Cadastro com nome, nascimento, gênero, altura, intenção de relacionamento, consumo de bebida alcoólica, uso de cigarro, posicionamento político, estilo musical favorito, Instagram, Spotify, cidade, nível de surfe, próxima surftrip com chegada e saída, e biografia
 - Upload de 1 a 3 fotos em JPG, PNG ou WebP
 - Armazenamento persistente de perfis no Cloudflare D1
 - Armazenamento das fotos no Cloudflare R2

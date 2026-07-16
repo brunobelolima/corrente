@@ -1,0 +1,1 @@
+ALTER TABLE `profiles` ADD `music_taste` text DEFAULT '' NOT NULL;

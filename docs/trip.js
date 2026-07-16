@@ -3,14 +3,16 @@ const originalRender=render;
 render=function(){originalRender();document.querySelector('#cardTrip').innerHTML=`✈ Próxima surftrip: <b>${trips[index%trips.length]}</b>`};
 
 const originalOpenModal=openModal;
-openModal=function(){originalOpenModal();const saved=JSON.parse(localStorage.getItem('corrente-profile')||'null');if(saved){document.querySelector('#surftripDestination').value=saved.surftripDestination||'';document.querySelector('#surftripDate').value=saved.surftripDate||''}};
+openModal=function(){originalOpenModal();const saved=JSON.parse(localStorage.getItem('corrente-profile')||'null');if(saved){document.querySelector('#surftripDestination').value=saved.surftripDestination||'';document.querySelector('#surftripArrivalDate').value=saved.surftripArrivalDate||saved.surftripDate||'';document.querySelector('#surftripDepartureDate').value=saved.surftripDepartureDate||''}document.querySelector('#surftripDepartureDate').min=document.querySelector('#surftripArrivalDate').value};
 document.querySelector('#joinBar').onclick=openModal;
 document.querySelector('#profileButton').onclick=openModal;
+document.querySelector('#surftripArrivalDate').addEventListener('change',event=>{const departure=document.querySelector('#surftripDepartureDate');departure.min=event.target.value;if(departure.value&&departure.value<event.target.value)departure.value=''});
 
 document.querySelector('#profileForm').addEventListener('submit',()=>{
   const saved=JSON.parse(localStorage.getItem('corrente-profile')||'{}');
   saved.surftripDestination=document.querySelector('#surftripDestination').value;
-  saved.surftripDate=document.querySelector('#surftripDate').value;
+  saved.surftripArrivalDate=document.querySelector('#surftripArrivalDate').value;
+  saved.surftripDepartureDate=document.querySelector('#surftripDepartureDate').value;
   localStorage.setItem('corrente-profile',JSON.stringify(saved));
 });
 render();

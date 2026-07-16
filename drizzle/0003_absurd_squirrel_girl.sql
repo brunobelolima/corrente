@@ -1,0 +1,1 @@
+ALTER TABLE `profiles` ADD `height_cm` integer DEFAULT 0 NOT NULL;

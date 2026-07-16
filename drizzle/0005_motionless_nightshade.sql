@@ -1,0 +1,1 @@
+ALTER TABLE `profiles` ADD `political_view` text DEFAULT '' NOT NULL;
